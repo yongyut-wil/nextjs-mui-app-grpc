@@ -227,7 +227,7 @@ export default function FoodSortingPage() {
         
         <Grid container spacing={{ xs: 2, sm: 3 }}>
           {/* Main List */}
-          <Grid item xs={12} sm={4} md={3}>
+          <Grid item xs={12} sm={4} md={4}>
             <Paper 
               elevation={3} 
               sx={{ 
@@ -317,7 +317,7 @@ export default function FoodSortingPage() {
           </Grid>
           
           {/* Fruits Column */}
-          <Grid item xs={12} sm={4} md={3}>
+          <Grid item xs={12} sm={4} md={4}>
             <Paper 
               elevation={3} 
               sx={{ 
