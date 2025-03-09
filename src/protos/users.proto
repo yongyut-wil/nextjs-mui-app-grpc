@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package users;
+
+service UserService {
+  rpc GetUsers (UserRequest) returns (UserResponse);
+}
+
+message UserRequest {
+  int32 limit = 1;
+  int32 skip = 2;
+}
+
+message UserResponse {
+  repeated User users = 1;
+  int32 total = 2;
+  int32 skip = 3;
+  int32 limit = 4;
+}
+
+message User {
+  int32 id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string maidenName = 4;
+  int32 age = 5;
+  string gender = 6;
+  string email = 7;
+  string phone = 8;
+  string username = 9;
+  string password = 10;
+  string birthDate = 11;
+  string image = 12;
+  string bloodGroup = 13;
+  double height = 14;
+  double weight = 15;
+  string eyeColor = 16;
+  Hair hair = 17;
+  string ip = 18;
+  Address address = 19;
+  string macAddress = 20;
+  string university = 21;
+  Bank bank = 22;
+  Company company = 23;
+  string ein = 24;
+  string ssn = 25;
+  string userAgent = 26;
+  Crypto crypto = 27;
+  string role = 28;
+}
+
+message Crypto {
+  string coin = 1;
+  string wallet = 2;
+  string network = 3;
+}
+
+message Company {
+  string department = 1;
+  string name = 2;
+  string title = 3;
+  Address address = 4;
+}
+
+message Bank {
+  string cardExpire = 1;
+  string cardNumber = 2;
+  string cardType = 3;
+  string currency = 4;
+  string iban = 5;
+}
+
+message Address {
+  string address = 1;
+  string city = 2;
+  string state = 3;
+  string stateCode = 4;
+  string postalCode = 5;
+  Coordinates coordinates = 6;
+  string country = 7;
+}
+
+message Coordinates {
+  double lat = 1;
+  double lng = 2;
+}
+
+message Hair {
+  string color = 1;
+  string type = 2;
+}
