@@ -195,13 +195,13 @@ export default function ApiDataPage() {
         </Typography>
         
         <Typography variant="body1" paragraph color="text.secondary">
-          Fetch and display user data from the dummyjson.com API using gRPC. Search for specific users by name, email, or username and browse through pages.
+          Fetch and display user data from the dummyjson.com API using gRPC. Search for specific users by department and browse through pages.
         </Typography>
         
         <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <TextField
-              placeholder="Search by name or email"
+              placeholder="Search by department"
               variant="outlined"
               size="small"
               value={searchTerm}
