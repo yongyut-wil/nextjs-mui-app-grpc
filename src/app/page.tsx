@@ -19,49 +19,6 @@ export default function Home() {
       {/* App Header */}
       <AppHeader />
 
-      {/* Hero Section */}
-      {/* <Paper
-        sx={{
-          position: 'relative',
-          backgroundColor: 'grey.800',
-          color: '#fff',
-          mb: 4,
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-          backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
-          py: 8
-        }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            right: 0,
-            left: 0,
-            backgroundColor: 'rgba(0,0,0,.4)',
-          }}
-        />
-        <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
-          <Typography component="h1" variant="h2" color="inherit" gutterBottom>
-            Welcome to Your Next.js App
-          </Typography>
-          <Typography variant="h5" color="inherit" paragraph>
-            A modern web application built with Next.js and Material UI.
-            This starter template includes everything you need to build amazing websites.
-          </Typography>
-          <Stack direction="row" spacing={2}>
-            <Button variant="contained" color="primary">
-              Get Started
-            </Button>
-            <Button variant="outlined" color="inherit">
-              Learn More
-            </Button>
-          </Stack>
-        </Container>
-      </Paper> */}
-
       {/* Feature Cards */}
       <Container maxWidth="lg" sx={{ mb: 8, mt: 2 }}>
         <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ mb: 4 }}>
