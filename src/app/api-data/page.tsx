@@ -83,6 +83,7 @@ export default function ApiDataPage() {
   // Initial data fetch
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Transform the user data into the department-based structure
