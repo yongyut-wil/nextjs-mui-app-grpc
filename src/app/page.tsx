@@ -71,9 +71,4 @@ const featuresData = [
     icon: <InfoIcon fontSize="large" color="primary" />,
     path: '/api-data',
   },
-  // {
-  //   title: 'Best Practices',
-  //   description: 'Follows industry best practices for performance, accessibility, and SEO optimization.',
-  //   icon: <InfoIcon fontSize="large" color="primary" />,
-  // },
 ];
