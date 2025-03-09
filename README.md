@@ -13,7 +13,8 @@ A modern, production-ready Next.js application built with Material UI, TypeScrip
 - **Theme Configuration** - Customizable theming with MUI 
 - **React 19** - Latest React version with improved performance
 
-- [Render](https://render.com/) - Example deployment | ตัวอย่างการเผยแพร่: [https://nextjs-mui-app-grpc.onrender.com/](https://nextjs-mui-app-grpc.onrender.com/)
+## Live Preview | ดูตัวอย่าง
+- [Render](https://render.com/) - Live deployment | การเผยแพร่แบบออนไลน์: [https://nextjs-mui-app-grpc.onrender.com/](https://nextjs-mui-app-grpc.onrender.com/)
 
 
 ## Getting Started | เริ่มต้นใช้งาน
