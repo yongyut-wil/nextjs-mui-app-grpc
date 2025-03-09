@@ -201,7 +201,7 @@ export default function ApiDataPage() {
         <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <TextField
-              placeholder="Search by name or email"
+              placeholder="Search by department"
               variant="outlined"
               size="small"
               value={searchTerm}
