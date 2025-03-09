@@ -140,7 +140,7 @@ export default function ApiDataPage() {
   
   // Filter departments based on search term
   const filteredDepartments = Object.entries(transformedData)
-    .filter(([department, data]) => {
+    .filter(([department]) => {
       if (searchTerm === '') return true;
       
       // Check if department name matches
