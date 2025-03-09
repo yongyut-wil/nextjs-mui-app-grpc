@@ -9,21 +9,45 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia,
   CircularProgress,
   TextField,
-  InputAdornment, Paper,
-  Divider,
-  Chip
+  InputAdornment,
+  Paper, Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from '@mui/material';
-import { ArrowBack as ArrowBackIcon, Search as SearchIcon, Refresh as RefreshIcon } from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon, Search as SearchIcon, Refresh as RefreshIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import AppHeader from '@/components/AppHeader';
 import { useRouter } from 'next/navigation';
 import { User, UserResponse } from '@/services/users.interface';
 
+// Interface for the transformed data structure
+interface DepartmentData {
+  [department: string]: {
+    male: number;
+    female: number;
+    ageRange: string;
+    hair: {
+      [color: string]: number;
+    };
+    addressUser: {
+      [name: string]: string;
+    };
+    // users: User[]; // Store original users for reference
+  };
+}
+
 export default function ApiDataPage() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
+  const [transformedData, setTransformedData] = useState<DepartmentData>({});
+  console.log('transformedData', transformedData)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,13 +85,77 @@ export default function ApiDataPage() {
     fetchData();
   }, []);
 
-  // Filter users based on search term
-  const filteredUsers = users.filter(user => {
-    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-    return fullName.includes(searchTerm.toLowerCase()) || 
-           user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           user.username.toLowerCase().includes(searchTerm.toLowerCase());
-  });
+  // Transform the user data into the department-based structure
+  const transformUserData = (userData: User[]) => {
+    return userData.reduce((departmentData: DepartmentData, user) => {
+      const department = user.company.department;
+      
+      if (!departmentData[department]) {
+        departmentData[department] = {
+          male: 0,
+          female: 0,
+          ageRange: `${user.age}-${user.age}`,
+          hair: {},
+          addressUser: {},
+          // users: []
+        };
+      }
+      
+      // Update gender count
+      if (user.gender.toLowerCase() === 'male') {
+        departmentData[department].male += 1;
+      } else if (user.gender.toLowerCase() === 'female') {
+        departmentData[department].female += 1;
+      }
+      
+      // Update age range
+      const [minAge, maxAge] = departmentData[department].ageRange.split('-').map(Number);
+      const newMinAge = Math.min(minAge, user.age);
+      const newMaxAge = Math.max(maxAge, user.age);
+      departmentData[department].ageRange = `${newMinAge}-${newMaxAge}`;
+      
+      // Update hair color count
+      const hairColor = user.hair.color;
+      departmentData[department].hair[hairColor] = 
+        (departmentData[department].hair[hairColor] || 0) + 1;
+      
+      // Add user address info
+      const userName = `${user.firstName}${user.lastName}`;
+      departmentData[department].addressUser[userName] = user.address.postalCode;
+      
+      // Store original user
+      // departmentData[department].users.push(user);
+      
+      return departmentData;
+    }, {} as DepartmentData);
+  };
+  
+  // Update transformed data when users change
+  useEffect(() => {
+    if (users.length > 0) {
+      const transformedData = transformUserData(users);
+      setTransformedData(transformedData);
+    }
+  }, [users]);
+  
+  // Filter departments based on search term
+  const filteredDepartments = Object.entries(transformedData)
+    .filter(([department, data]) => {
+      if (searchTerm === '') return true;
+      
+      // Check if department name matches
+      if (department.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return true;
+      }
+      
+      // Check if any user in this department matches
+      // return data.users.some(user => {
+      //   const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+      //   return fullName.includes(searchTerm.toLowerCase()) || 
+      //          user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      //          user.username.toLowerCase().includes(searchTerm.toLowerCase());
+      // });
+    });
 
   // Handle pagination
   const handleNextPage = () => {
@@ -175,88 +263,139 @@ export default function ApiDataPage() {
             </Button>
           </Paper>
         ) : (
-          <Grid container spacing={3}>
-            {filteredUsers.length > 0 ? (
-              filteredUsers.map(user => (
-                <Grid key={user.id} item xs={12} sm={6} md={4}>
-                  <Card sx={{ 
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    transition: 'transform 0.3s ease',
-                    '&:hover': {
-                      transform: 'scale(1.03)',
-                      boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
-                    }
-                  }}>
-                    <CardMedia
-                      component="img"
-                      height="200"
-                      image={user.image}
-                      alt={`${user.firstName} ${user.lastName}`}
-                      sx={{ objectFit: 'cover' }}
-                    />
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {user.firstName} {user.lastName}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        @{user.username}
-                      </Typography>
-                      
-                      <Divider sx={{ my: 1 }} />
-                      
-                      <Box sx={{ mt: 2 }}>
-                        <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <strong>Email:</strong> {user.email}
-                        </Typography>
-                        <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <strong>Phone:</strong> {user.phone}
-                        </Typography>
-                        <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <strong>Age:</strong> {user.age}
-                        </Typography>
-                        <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <strong>Gender:</strong> {user.gender}
-                        </Typography>
-                      </Box>
-                      
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 2 }}>
-                        <Chip 
-                          size="small" 
-                          label={user.bloodGroup} 
-                          color="error" 
-                          variant="outlined" 
-                        />
-                        <Chip 
-                          size="small" 
-                          label={`${user.height} cm`} 
-                          color="primary" 
-                          variant="outlined" 
-                        />
-                        <Chip 
-                          size="small" 
-                          label={user.university} 
-                          color="info" 
-                          variant="outlined" 
-                          sx={{ 
-                            maxWidth: '100%',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                          }}
-                        />
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))
-            ) : (
-              <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
-                <Typography variant="h6">No users match your search criteria</Typography>
-              </Box>
-            )}
-          </Grid>
+          <>
+            <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Department Summary View
+              </Typography>
+
+              <Grid container spacing={3}>
+                {filteredDepartments.length > 0 ? (
+                  filteredDepartments.map(([department, data]) => (
+                    <Grid key={department} item xs={12}>
+                      <Accordion>
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon />}
+                          aria-controls={`panel-${department}-content`}
+                          id={`panel-${department}-header`}
+                        >
+                          <Typography variant="h6">{department}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <Grid container spacing={2}>
+                            <Grid item xs={12} md={6}>
+                              <Card sx={{ mb: 2 }}>
+                                <CardContent>
+                                  <Typography variant="h6" gutterBottom>Department Stats</Typography>
+                                  <TableContainer>
+                                    <Table size="small">
+                                      <TableBody>
+                                        <TableRow>
+                                          <TableCell component="th" scope="row">Male Count</TableCell>
+                                          <TableCell align="right">{data.male}</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                          <TableCell component="th" scope="row">Female Count</TableCell>
+                                          <TableCell align="right">{data.female}</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                          <TableCell component="th" scope="row">Age Range</TableCell>
+                                          <TableCell align="right">{data.ageRange}</TableCell>
+                                        </TableRow>
+                                      </TableBody>
+                                    </Table>
+                                  </TableContainer>
+                                </CardContent>
+                              </Card>
+
+                              <Card>
+                                <CardContent>
+                                  <Typography variant="h6" gutterBottom>Hair Color Distribution</Typography>
+                                  <TableContainer>
+                                    <Table size="small">
+                                      <TableHead>
+                                        <TableRow>
+                                          <TableCell>Color</TableCell>
+                                          <TableCell align="right">Count</TableCell>
+                                        </TableRow>
+                                      </TableHead>
+                                      <TableBody>
+                                        {Object.entries(data.hair).map(([color, count]) => (
+                                          <TableRow key={color}>
+                                            <TableCell component="th" scope="row">{color}</TableCell>
+                                            <TableCell align="right">{count}</TableCell>
+                                          </TableRow>
+                                        ))}
+                                      </TableBody>
+                                    </Table>
+                                  </TableContainer>
+                                </CardContent>
+                              </Card>
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                              <Card>
+                                <CardContent>
+                                  <Typography variant="h6" gutterBottom>Users & Postal Codes</Typography>
+                                  <TableContainer>
+                                    <Table size="small">
+                                      <TableHead>
+                                        <TableRow>
+                                          <TableCell>Name</TableCell>
+                                          <TableCell align="right">Postal Code</TableCell>
+                                        </TableRow>
+                                      </TableHead>
+                                      <TableBody>
+                                        {Object.entries(data.addressUser).map(([name, postalCode]) => (
+                                          <TableRow key={name}>
+                                            <TableCell component="th" scope="row">{name}</TableCell>
+                                            <TableCell align="right">{postalCode}</TableCell>
+                                          </TableRow>
+                                        ))}
+                                      </TableBody>
+                                    </Table>
+                                  </TableContainer>
+                                </CardContent>
+                              </Card>
+                            </Grid>
+
+                            {/* <Grid item xs={12}>
+                              <Typography variant="subtitle1" gutterBottom>Users in Department</Typography>
+                              <List dense>
+                                {data.users.map(user => (
+                                  <ListItem key={user.id}>
+                                    <ListItemText
+                                      primary={`${user.firstName} ${user.lastName}`}
+                                      secondary={`Age: ${user.age} | Gender: ${user.gender} | Hair: ${user.hair.color}`}
+                                    />
+                                  </ListItem>
+                                ))}
+                              </List>
+                            </Grid> */}
+                          </Grid>
+                        </AccordionDetails>
+                      </Accordion>
+                    </Grid>
+                  ))
+                ) : (
+                  <Grid item xs={12}>
+                    <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
+                      <Typography variant="h6">No departments match your search criteria</Typography>
+                    </Box>
+                  </Grid>
+                )}
+              </Grid>
+            </Paper>
+
+            <Paper elevation={3} sx={{ p: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                JSON Data Structure
+              </Typography>
+              <pre style={{ overflowX: 'auto', padding: '16px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+                {JSON.stringify(transformedData, null, 2)}
+              </pre>
+            </Paper>
+          </>
         )}
       </Container>
     </Box>
